@@ -1,2 +1,2 @@
-data_path: 'helpers'
-save_path: 'helpers/labels'
+data_path: '/workspace/prismer/test/source'
+save_path: '/workspace/prismer/test/output'
