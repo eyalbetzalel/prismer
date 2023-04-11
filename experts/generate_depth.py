@@ -12,29 +12,29 @@ except ModuleNotFoundError:
     import ruamel.yaml as yaml
     
 from experts.model_bank import load_expert_model
-from experts.depth.generate_dataset import Dataset
+from experts.depth.generate_dataset import Dataset, EyalDataset
 import PIL.Image as Image
 from accelerate import Accelerator
 from tqdm import tqdm
 
 model, transform = load_expert_model(task='depth')
-accelerator = Accelerator(mixed_precision='fp16')
+# accelerator = Accelerator(mixed_precision='fp16')
 
 config = yaml.load(open('configs/experts.yaml', 'r'), Loader=yaml.Loader)
 data_path = config['data_path']
 save_path = os.path.join(config['save_path'], 'depth')
 
-batch_size = 64
-dataset = Dataset(data_path, transform)
+batch_size = 1
+dataset = EyalDataset(data_path, transform=transform)
 data_loader = torch.utils.data.DataLoader(
     dataset=dataset,
     batch_size=batch_size,
     shuffle=False,
-    num_workers=4,
+    num_workers=1,
     pin_memory=True
 )
 
-model, data_loader = accelerator.prepare(model, data_loader)
+# model, data_loader = accelerator.prepare(model, data_loader)
 
 with torch.no_grad():
     for i, (test_data, img_path, img_size) in enumerate(tqdm(data_loader)):
