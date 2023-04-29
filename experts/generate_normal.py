@@ -26,8 +26,8 @@ config = yaml.load(open('configs/experts.yaml', 'r'), Loader=yaml.Loader)
 data_path = config['data_path']
 save_path = os.path.join(config['save_path'], 'normal')
 
-batch_size = 64
-dataset = EyalDataset(data_path, transform)
+batch_size = 1
+dataset = CustomDataset(data_path, transform)
 data_loader = torch.utils.data.DataLoader(
     dataset=dataset,
     batch_size=batch_size,

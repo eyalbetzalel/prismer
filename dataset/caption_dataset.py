@@ -32,10 +32,10 @@ class Caption(Dataset):
             elif self.dataset == 'nocaps':
                 self.data_list = json.load(open(os.path.join(self.data_path, 'nocaps_val.json'), 'r'))
             elif self.dataset == 'demo':
-                data_folders = glob.glob(f'{self.data_path}/*/')
-                self.data_list = [{'image': data} for f in data_folders for data in glob.glob(f + '*.jpg')]
-                self.data_list += [{'image': data} for f in data_folders for data in glob.glob(f + '*.png')]
-                self.data_list += [{'image': data} for f in data_folders for data in glob.glob(f + '*.jpeg')]
+                self.data_list = [{'image': data} for data in glob.glob(f'{self.data_path}/**/*.jpg', recursive=True)]
+                self.data_list += [{'image': data} for data in glob.glob(f'{self.data_path}/**/*.png', recursive=True)]
+                self.data_list += [{'image': data} for data in glob.glob(f'{self.data_path}/**/*.jpeg', recursive=True)]
+
 
     def __len__(self):
         return len(self.data_list)
@@ -49,7 +49,7 @@ class Caption(Dataset):
             image, labels, labels_info = get_expert_labels(self.data_path, self.label_path, data['image'], 'nocaps', self.experts)
         elif self.dataset == 'demo':
             img_path_split = self.data_list[index]['image'].split('/')
-            img_name = img_path_split[-2] + '/' + img_path_split[-1]
+            img_name = img_path_split[-3] + '/' + img_path_split[-2] + '/' + img_path_split[-1]
             image, labels, labels_info = get_expert_labels('', self.label_path, img_name, 'helpers', self.experts)
 
         experts = self.transform(image, labels)

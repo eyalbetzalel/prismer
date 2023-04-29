@@ -266,7 +266,7 @@ class DexiNed(nn.Module):
 
 
 if __name__ == '__main__':
-    batch_size = 8
+    batch_size = 4
     img_height = 352
     img_width = 352
 

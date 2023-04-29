@@ -27,7 +27,7 @@ nocaps:
   freeze: 'freeze_vision'
 
   batch_size_train: 4  # for 8 * 8 nodes [effective batch-size: 256]
-  batch_size_test: 8
+  batch_size_test: 4
   init_lr: 5e-5
   weight_decay: 0.05
   min_lr: 0

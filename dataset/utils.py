@@ -80,28 +80,28 @@ def get_expert_labels(data_path, label_path, image_path, dataset, experts):
         ps = image_path.split('.')[-1]
         for exp in experts:
             if exp in ['seg_coco', 'seg_ade', 'edge', 'depth']:
-                label_full_path = os.path.join(label_path, exp, dataset, image_path.replace(f'.{ps}', '.png'))
+                label_full_path = os.path.join(label_path, exp, image_path.replace(f'.{ps}', '.png'))
                 if os.stat(label_full_path).st_size > 0:
                     labels[exp] = Image.open(label_full_path).convert('L')
                 else:
                     labels[exp] = Image.fromarray(np.zeros([image.size[1], image.size[0]])).convert('L')
             elif exp == 'normal':
-                label_full_path = os.path.join(label_path, exp, dataset, image_path.replace(f'.{ps}', '.png'))
+                label_full_path = os.path.join(label_path, exp, image_path.replace(f'.{ps}', '.png'))
                 if os.stat(label_full_path).st_size > 0:
                     labels[exp] = Image.open(label_full_path).convert('RGB')
                 else:
                     labels[exp] = Image.fromarray(np.zeros([image.size[1], image.size[0], 3])).convert('RGB')
             elif exp == 'obj_detection':
-                label_full_path = os.path.join(label_path, exp, dataset, image_path.replace(f'.{ps}', '.png'))
+                label_full_path = os.path.join(label_path, exp, image_path.replace(f'.{ps}', '.png'))
                 if os.stat(label_full_path).st_size > 0:
                     labels[exp] = Image.open(label_full_path).convert('L')
                 else:
                     labels[exp] = Image.fromarray(255 * np.ones([image.size[1], image.size[0]])).convert('L')
-                label_info_path = os.path.join(label_path, exp, dataset, image_path.replace(f'.{ps}', '.json'))
+                label_info_path = os.path.join(label_path, exp, image_path.replace(f'.{ps}', '.json'))
                 labels_info[exp] = json.load(open(label_info_path, 'r'))
             elif exp == 'ocr_detection':
-                label_full_path = os.path.join(label_path, exp, dataset, image_path.replace(f'.{ps}', '.png'))
-                label_info_path = os.path.join(label_path, exp, dataset, image_path.replace(f'.{ps}', '.pt'))
+                label_full_path = os.path.join(label_path, exp, image_path.replace(f'.{ps}', '.png'))
+                label_info_path = os.path.join(label_path, exp, image_path.replace(f'.{ps}', '.pt'))
                 if os.path.exists(label_info_path):
                     labels[exp] = Image.open(label_full_path).convert('L')
                     labels_info[exp] = torch.load(label_info_path)

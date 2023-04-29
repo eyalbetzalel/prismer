@@ -16,6 +16,8 @@ except ModuleNotFoundError:
     
 from experts.model_bank import load_expert_model
 from experts.obj_detection.generate_dataset import Dataset, collate_fn
+from experts.depth.generate_dataset import EyalDataset
+
 from accelerate import Accelerator
 from tqdm import tqdm
 
@@ -27,18 +29,18 @@ data_path = config['data_path']
 save_path = config['save_path']
 
 depth_path = os.path.join(save_path, 'depth', data_path.split('/')[-1])
-batch_size = 32
-dataset = Dataset(data_path, depth_path, transform)
+batch_size = 4
+dataset = Dataset(data_path, depth_path, transform=transform)
 data_loader = torch.utils.data.DataLoader(
     dataset=dataset,
     batch_size=batch_size,
     shuffle=False,
-    num_workers=4,
+    num_workers=1,
     pin_memory=True,
     collate_fn=collate_fn,
 )
 
-model, data_loader = accelerator.prepare(model, data_loader)
+#model, data_loader = accelerator.prepare(model, data_loader)
 
 
 def get_mask_labels(depth, instance_boxes, instance_id):

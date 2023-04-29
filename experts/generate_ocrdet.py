@@ -18,6 +18,8 @@ except ModuleNotFoundError:
 
 from experts.model_bank import load_expert_model
 from experts.ocr_detection.generate_dataset import Dataset
+from experts.depth.generate_dataset import EyalDataset
+
 from accelerate import Accelerator
 from tqdm import tqdm
 
@@ -30,18 +32,18 @@ config = yaml.load(open('configs/experts.yaml', 'r'), Loader=yaml.Loader)
 data_path = config['data_path']
 save_path = os.path.join(config['save_path'], 'ocr_detection')
 
-batch_size = 32
-dataset = Dataset(data_path, transform)
+batch_size = 4
+dataset = Dataset(data_path, transform=transform)
 data_loader = torch.utils.data.DataLoader(
     dataset=dataset,
     batch_size=batch_size,
     shuffle=False,
-    num_workers=4,
+    num_workers=1,
     pin_memory=True,
 )
 
 clip_model, _ = clip.load("ViT-L/14", device=accelerator.device)
-model, data_loader = accelerator.prepare(model, data_loader)
+# model, data_loader = accelerator.prepare(model, data_loader)
 
 
 def get_label(w, h, word_instances):

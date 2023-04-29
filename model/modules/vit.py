@@ -33,6 +33,90 @@ _MODELS = {
     "ViT-H/14": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
 }
 
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+
+import torch
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+def create_heatmap(vit_output, pixel_coord, patch_size, rgb, img_height, img_width, exp_name=""):
+    """
+    Create heatmap based on the ViT output features at a specified pixel coordinate from an RGB image.
+
+    Args:
+        vit_output (torch.Tensor): Output features from a ViT model after forward pass. 
+                                   Tensor of shape (batch_size, num_patches, feature_dim).
+        rgb (torch.Tensor): RGB represntation of the image.
+        pixel_coord (tuple): Pixel coordinate of interest in the RGB image, given as a tuple (row, col).
+        patch_size (int): Size of each square patch in the ViT model.
+        img_height (int): Height of the original RGB image in pixels.
+        img_width (int): Width of the original RGB image in pixels.
+        exp_name (str): modality type name.
+
+    Returns:
+        None
+    """
+    # Convert pixel coordinate to patch index in the ViT model
+    patch_row = pixel_coord[0] // patch_size
+    patch_col = pixel_coord[1] // patch_size
+    patch_idx = patch_row * (img_width // patch_size) + patch_col
+    
+    # Extract feature vector for the specified patch index
+    patch_feat = vit_output[:, :, patch_row, patch_col]
+    patch_feat = patch_feat.unsqueeze(dim=2).unsqueeze(dim=3)
+
+    vit_output = vit_output.view(1, 768, -1, 1)
+    
+    # Compute L2 distances between the feature vector at the specified patch and all other patches
+    dists = torch.cdist(vit_output, patch_feat, p=2.0)
+    
+    # Convert distances to a heatmap image
+    heatmap = dists.view(-1, img_height // patch_size, img_width // patch_size).sum(dim=0)
+    
+    # Normalize heatmap values between 0 and 1
+    heatmap = (heatmap - heatmap.min()) / (heatmap.max() - heatmap.min())
+    
+    # Resize heatmap to match the dimensions of the RGB image
+    heatmap = F.interpolate(heatmap.unsqueeze(dim=0).unsqueeze(dim=1), size=(rgb.shape[-1], rgb.shape[-2]), mode='bilinear', align_corners=False)
+    heatmap = heatmap.squeeze(dim=1)
+
+    # Visualize heatmap
+    fig, ax = plt.subplots(figsize=(8, 8))
+    rgb = rgb.squeeze(dim=0).permute(1, 2, 0)
+    im = ax.imshow(rgb, alpha=0.5)
+    im2 = ax.imshow(heatmap.squeeze(0), cmap='jet', alpha=0.8, interpolation='nearest')
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    plt.colorbar(im2, cax=cax)
+    
+    pixel_coord_h_rescale = np.int(np.floor(pixel_coord[0] * (rgb.shape[0] / img_height)))
+    pixel_coord_w_rescale = np.int(np.floor(pixel_coord[1] * (rgb.shape[1] / img_width)))
+    # Add red dot at pixel_coord
+    ax.plot(pixel_coord_w_rescale, pixel_coord_h_rescale, 'ro', markersize=10)
+
+    # Add exp_name in top left corner of image
+    ax.text(0.05, 0.95, exp_name, transform=ax.transAxes, fontsize=15,
+            verticalalignment='top', bbox={'facecolor': 'white', 'alpha': 0.8, 'pad': 5})
+    
+    # Check if file already exists
+    file_name = exp_name + "heatmap.png"
+    if os.path.exists(file_name):
+        i = 1
+        while os.path.exists(exp_name + "heatmap_" + str(i) + ".png"):
+            i += 1
+        file_name = exp_name + "heatmap_" + str(i) + ".png"
+    
+    # Save heatmap as image file
+    plt.savefig(file_name)
+    plt.close()
+
+
 
 class ResidualAttentionBlock(nn.Module):
     def __init__(self, d_model: int, n_head: int):
@@ -79,7 +163,6 @@ class VisionTransformer(nn.Module):
     def __init__(self, input_resolution: int, patch_size: int, width: int, layers: int, heads: int, experts: dict):
         super().__init__()
         self.experts = experts
-
         self.conv1 = nn.ModuleDict()
         for e in experts:
             if e == 'rgb':
@@ -135,7 +218,10 @@ class VisionTransformer(nn.Module):
         for exp in x:
             domain = 'seg' if 'seg' in exp else exp
             x_ = x[exp] if exp != 'obj_detection' else x[exp]['label']
+            image_w = x_.shape[-1]
+            image_h = x_.shape[-2]
             x_ = self.conv1[domain](x_)
+
 
             # add instance embedding (object detection only)
             if exp == 'obj_detection':
@@ -147,13 +233,17 @@ class VisionTransformer(nn.Module):
                     label_map[:, instance_map == l] += self.instance_embedding[l_].unsqueeze(-1)
                 x_ = rearrange(label_map, 'd b h w -> b d h w')
 
-            x_ = rearrange(x_, 'b d h w -> b (h w) d')
+            if domain != 'rgb':
+                create_heatmap(vit_output = x_, pixel_coord = (100,100), patch_size = self.patch_size, rgb= x['rgb'], img_height=image_h, img_width=image_w, exp_name=domain)
 
+            x_ = rearrange(x_, 'b d h w -> b (h w) d')
+            
             # add position embedding (shared across all modalities)
             if domain == 'rgb':
                 x_ = x_ + self.positional_embedding.to(x_.dtype)
                 rgb_inputs = x_
             else:
+                
                 exp_positional_embedding = interpolate_pos_embed(self.positional_embedding.to(x_.dtype), x_.shape[1])
                 x_ = x_ + exp_positional_embedding
                 experts_inputs.append(x_)
@@ -169,6 +259,7 @@ class VisionTransformer(nn.Module):
         x = self.ln_pre(x)
         x = self.transformer(x)
         x = self.ln_post(x)
+
         return x  # latents, batch, output_dim
 
 

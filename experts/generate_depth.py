@@ -13,6 +13,7 @@ except ModuleNotFoundError:
     
 from experts.model_bank import load_expert_model
 from experts.depth.generate_dataset import Dataset, EyalDataset
+
 import PIL.Image as Image
 from accelerate import Accelerator
 from tqdm import tqdm
@@ -24,8 +25,8 @@ config = yaml.load(open('configs/experts.yaml', 'r'), Loader=yaml.Loader)
 data_path = config['data_path']
 save_path = os.path.join(config['save_path'], 'depth')
 
-batch_size = 1
-dataset = EyalDataset(data_path, transform=transform)
+batch_size = 4
+dataset = Dataset(data_path, transform=transform)
 data_loader = torch.utils.data.DataLoader(
     dataset=dataset,
     batch_size=batch_size,

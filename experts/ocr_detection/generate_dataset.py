@@ -12,6 +12,20 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+class EyalDataset(Dataset):
+    def __init__(self, root_dir, transform=None):
+        self.img_dir = root_dir
+        self.img_list = os.listdir(root_dir)
+
+    def __len__(self):
+        return len(self.img_list)
+
+    def __getitem__(self, idx):
+        img_path = os.path.join(self.img_dir, self.img_list[idx])
+        with Image.open(img_path) as img:
+            img_size = img.size
+            img = torch.from_numpy(np.array(img)).permute(2, 0, 1).float() / 255.0
+        return img, img_path, img_size
 
 class Dataset(Dataset):
     def __init__(self, data_path, transform):

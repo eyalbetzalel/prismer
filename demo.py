@@ -25,27 +25,27 @@ config = yaml.load(open('configs/caption.yaml', 'r'), Loader=yaml.Loader)['demo'
 # generate expert labels
 if len(config['experts']) > 0:
     script_name = f'python experts/generate_depth.py'
-    os.system(script_name)
+    # os.system(script_name)
     print('***** Generated Depth *****')
 
     script_name = f'python experts/generate_edge.py'
-    os.system(script_name)
+    # os.system(script_name)
     print('***** Generated Edge *****')
 
     script_name = f'python experts/generate_normal.py'
-    os.system(script_name)
+    # os.system(script_name)
     print('***** Generated Surface Normals *****')
 
     script_name = f'python experts/generate_objdet.py'
-    os.system(script_name)
+    # os.system(script_name)
     print('***** Generated Object Detection Labels *****')
 
     script_name = f'python experts/generate_ocrdet.py'
-    os.system(script_name)
+    # os.system(script_name)
     print('***** Generated OCR Detection Labels *****')
 
     script_name = f'python experts/generate_segmentation.py'
-    os.system(script_name)
+    # os.system(script_name)
     print('***** Generated Segmentation Labels *****')
 
 # load datasets
