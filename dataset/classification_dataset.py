@@ -6,7 +6,7 @@
 
 import glob
 from torch.utils.data import Dataset
-from dataset.utils import *
+from ..dataset.utils import *
 
 
 class Classification(Dataset):

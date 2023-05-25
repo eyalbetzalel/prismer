@@ -8,7 +8,7 @@ except ModuleNotFoundError:
 
 
 from model.prismer_caption import PrismerCaption
-from dataset import create_dataset, create_loader
+from models.prismer.dataset import create_dataset, create_loader
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser()

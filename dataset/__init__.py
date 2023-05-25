@@ -6,10 +6,10 @@
 
 from torch.utils.data import DataLoader
 
-from dataset.pretrain_dataset import Pretrain
-from dataset.vqa_dataset import VQA
-from dataset.caption_dataset import Caption
-from dataset.classification_dataset import Classification
+from ..dataset.pretrain_dataset import Pretrain
+from ..dataset.vqa_dataset import VQA
+from ..dataset.caption_dataset import Caption
+from ..dataset.classification_dataset import Classification
 
 
 def create_dataset(dataset, config):

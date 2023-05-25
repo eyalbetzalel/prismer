@@ -18,7 +18,7 @@ except ModuleNotFoundError:
     
 from accelerate import Accelerator, FullyShardedDataParallelPlugin
 from model.prismer_caption import PrismerCaption
-from dataset import create_dataset, create_loader
+from models.prismer.dataset import create_dataset, create_loader
 from utils import *
 from tqdm import tqdm
 

@@ -1,0 +1,4 @@
+# ninja log v5
+1	9012	1681206294592085154	/workspace/prismer/experts/segmentation/mask2former/modeling/pixel_decoder/ops/build/temp.linux-x86_64-3.8/workspace/prismer/experts/segmentation/mask2former/modeling/pixel_decoder/ops/src/cpu/ms_deform_attn_cpu.o	dd1c194939c33ed1
+0	35881	1681206321435677943	/workspace/prismer/experts/segmentation/mask2former/modeling/pixel_decoder/ops/build/temp.linux-x86_64-3.8/workspace/prismer/experts/segmentation/mask2former/modeling/pixel_decoder/ops/src/vision.o	53c5c68e7497d4e1
+1	83430	1681206368988728206	/workspace/prismer/experts/segmentation/mask2former/modeling/pixel_decoder/ops/build/temp.linux-x86_64-3.8/workspace/prismer/experts/segmentation/mask2former/modeling/pixel_decoder/ops/src/cuda/ms_deform_attn_cuda.o	ed437337a9e2df23

@@ -12,12 +12,12 @@ import PIL.Image as Image
 import numpy as np
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as transforms_f
-from dataset.randaugment import RandAugment
+from ..dataset.randaugment import RandAugment
 
-COCO_FEATURES = torch.load('dataset/coco_features.pt')['features']
-ADE_FEATURES = torch.load('dataset/ade_features.pt')['features']
-DETECTION_FEATURES = torch.load('dataset/detection_features.pt')['features']
-BACKGROUND_FEATURES = torch.load('dataset/background_features.pt')
+COCO_FEATURES = torch.load('models/prismer/dataset/coco_features.pt')['features']
+ADE_FEATURES = torch.load('models/prismer/dataset/ade_features.pt')['features']
+DETECTION_FEATURES = torch.load('models/prismer/dataset/detection_features.pt')['features']
+BACKGROUND_FEATURES = torch.load('models/prismer/dataset/background_features.pt')
 
 
 class Transform:

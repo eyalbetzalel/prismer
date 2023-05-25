@@ -11,8 +11,9 @@ try:
 except ModuleNotFoundError:
     import ruamel.yaml as yaml
     
-from experts.model_bank import load_expert_model
-from experts.depth.generate_dataset import Dataset, EyalDataset
+# from experts.model_bank import load_expert_model
+from .model_bank import load_expert_model
+from .depth.generate_dataset import Dataset, EyalDataset
 
 import PIL.Image as Image
 from accelerate import Accelerator
@@ -21,7 +22,7 @@ from tqdm import tqdm
 model, transform = load_expert_model(task='depth')
 # accelerator = Accelerator(mixed_precision='fp16')
 
-config = yaml.load(open('configs/experts.yaml', 'r'), Loader=yaml.Loader)
+config = yaml.load(open('models/prismer/configs/experts.yaml', 'r'), Loader=yaml.Loader)
 data_path = config['data_path']
 save_path = os.path.join(config['save_path'], 'depth')
 

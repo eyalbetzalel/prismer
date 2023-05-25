@@ -8,7 +8,7 @@ import glob
 
 from torch.utils.data import Dataset
 from PIL import ImageFile
-from dataset.utils import *
+from ...dataset.utils import *
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
